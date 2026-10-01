@@ -1,53 +1,45 @@
 <header id="page-topbar"
     class="rtl:md:right-vertical-menu group-data-[sidebar-size=md]:ltr:md:left-vertical-menu-md group-data-[sidebar-size=md]:rtl:md:right-vertical-menu-md group-data-[sidebar-size=sm]:ltr:md:left-vertical-menu-sm group-data-[sidebar-size=sm]:rtl:md:right-vertical-menu-sm group-data-[layout=horizontal]:ltr:left-0 group-data-[layout=horizontal]:rtl:right-0 fixed right-0 z-[1000] left-0 print:hidden group-data-[navbar=bordered]:m-4 group-data-[navbar=bordered]:[&.is-sticky]:mt-0 transition-all ease-linear duration-300 group-data-[navbar=hidden]:hidden group-data-[navbar=scroll]:absolute group/topbar group-data-[layout=horizontal]:z-[1004] ltr:md:left-vertical-menu ">
+    <style>
+        .remove-caret::after {
+            display: none !important;
+        }
+    </style>
     <div class="layout-width">
-        <div
-            class="flex items-center px-4 mx-auto bg-topbar border-b-2 border-topbar group-data-[topbar=dark]:bg-topbar-dark group-data-[topbar=dark]:border-topbar-dark group-data-[topbar=brand]:bg-topbar-brand group-data-[topbar=brand]:border-topbar-brand shadow-md h-header shadow-slate-200/50 group-data-[navbar=bordered]:rounded-md group-data-[navbar=bordered]:group-[.is-sticky]/topbar:rounded-t-none group-data-[topbar=dark]:dark:bg-zink-700 group-data-[topbar=dark]:dark:border-zink-700 dark:shadow-none group-data-[topbar=dark]:group-[.is-sticky]/topbar:dark:shadow-zink-500 group-data-[topbar=dark]:group-[.is-sticky]/topbar:dark:shadow-md group-data-[navbar=bordered]:shadow-none group-data-[layout=horizontal]:group-data-[navbar=bordered]:rounded-b-none group-data-[layout=horizontal]:shadow-none group-data-[layout=horizontal]:dark:group-[.is-sticky]/topbar:shadow-none">
-            <div
-                class="flex items-center w-full group-data-[layout=horizontal]:mx-auto group-data-[layout=horizontal]:max-w-screen-2xl navbar-header group-data-[layout=horizontal]:ltr:xl:pr-3 group-data-[layout=horizontal]:rtl:xl:pl-3">
+        <div class="flex items-center px-6 mx-auto bg-white/80 backdrop-blur-xl border-b border-slate-100 shadow-[0_4px_24px_-8px_rgba(0,0,0,0.05)] h-[76px] dark:bg-zink-800/80 dark:border-zink-700 transition-all duration-300 z-50 sticky top-0">
+            <div class="flex items-center w-full group-data-[layout=horizontal]:mx-auto group-data-[layout=horizontal]:max-w-screen-2xl navbar-header group-data-[layout=horizontal]:ltr:xl:pr-3 group-data-[layout=horizontal]:rtl:xl:pl-3">
+                {{-- Sidebar Toggle Button --}}
+                <button type="button" id="sidebar-toggle-btn"
+                    class="inline-flex items-center justify-center w-10 h-10 text-slate-500 transition-all duration-200 ease-linear bg-slate-50 border border-slate-100 rounded-xl hover:bg-slate-100 hover:text-slate-800 dark:bg-zink-700 dark:text-zink-200 dark:hover:bg-zink-600 dark:border-zink-600 shadow-sm"
+                    title="Toggle Sidebar">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="w-5 h-5 sidebar-toggle-icon transition-transform duration-300">
+                        <line x1="4" x2="20" y1="12" y2="12"></line>
+                        <line x1="4" x2="20" y1="6" y2="6"></line>
+                        <line x1="4" x2="20" y1="18" y2="18"></line>
+                    </svg>
+                </button>
                 <div class="flex gap-3 ms-auto">
                     {{-- -------------------------------------------Dark and Ligt Mode -------------------------------------------- --}}
-                    <div class="relative flex items-center h-header">
+                    {{-- <div class="relative flex items-center h-[76px]">
                         <button type="button"
-                            class="inline-flex relative justify-center items-center p-0 text-topbar-item transition-all w-[37.5px] h-[37.5px] duration-200 ease-linear bg-topbar rounded-md btn hover:bg-topbar-item-bg-hover hover:text-topbar-item-hover group-data-[topbar=dark]:bg-topbar-dark group-data-[topbar=dark]:hover:bg-topbar-item-bg-hover-dark group-data-[topbar=dark]:hover:text-topbar-item-hover-dark group-data-[topbar=brand]:bg-topbar-brand group-data-[topbar=brand]:hover:bg-topbar-item-bg-hover-brand group-data-[topbar=brand]:hover:text-topbar-item-hover-brand group-data-[topbar=dark]:dark:bg-zink-700 group-data-[topbar=dark]:dark:hover:bg-zink-600 group-data-[topbar=brand]:text-topbar-item-brand group-data-[topbar=dark]:dark:hover:text-zink-50 group-data-[topbar=dark]:dark:text-zink-200 group-data-[topbar=dark]:text-topbar-item-dark"
+                            class="inline-flex relative justify-center items-center p-0 text-slate-500 transition-all w-10 h-10 duration-200 ease-linear bg-slate-50 border border-slate-100 rounded-xl hover:bg-slate-100 hover:text-slate-800 dark:bg-zink-700 dark:text-zink-200 dark:hover:bg-zink-600 dark:border-zink-600 shadow-sm"
                             id="light-dark-mode">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                stroke-linejoin="round" data-lucide="sun"
-                                class="lucide lucide-sun inline-block w-5 h-5 stroke-1 fill-slate-100 group-data-[topbar=dark]:fill-topbar-item-bg-hover-dark group-data-[topbar=brand]:fill-topbar-item-bg-hover-brand">
-                                <circle cx="12" cy="12" r="4"></circle>
-                                <path d="M12 2v2"></path>
-                                <path d="M12 20v2"></path>
-                                <path d="m4.93 4.93 1.41 1.41"></path>
-                                <path d="m17.66 17.66 1.41 1.41"></path>
-                                <path d="M2 12h2"></path>
-                                <path d="M20 12h2"></path>
-                                <path d="m6.34 17.66-1.41 1.41"></path>
-                                <path d="m19.07 4.93-1.41 1.41"></path>
-                            </svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2"></path><path d="M12 20v2"></path><path d="m4.93 4.93 1.41 1.41"></path><path d="m17.66 17.66 1.41 1.41"></path><path d="M2 12h2"></path><path d="M20 12h2"></path><path d="m6.34 17.66-1.41 1.41"></path><path d="m19.07 4.93-1.41 1.41"></path></svg>
                         </button>
-                    </div>
+                    </div> --}}
 
                     {{-- -------------------------------------------Notification Drop down-------------------------------------------- --}}
-                    <div class="relative flex items-center dropdown h-header">
+                    {{-- <div class="relative flex items-center dropdown h-[76px]">
                         <button type="button"
-                            class="inline-flex justify-center relative items-center p-0 text-topbar-item transition-all w-[37.5px] h-[37.5px] duration-200 ease-linear bg-topbar rounded-md dropdown-toggle btn hover:bg-topbar-item-bg-hover hover:text-topbar-item-hover group-data-[topbar=dark]:bg-topbar-dark group-data-[topbar=dark]:hover:bg-topbar-item-bg-hover-dark group-data-[topbar=dark]:hover:text-topbar-item-hover-dark group-data-[topbar=brand]:bg-topbar-brand group-data-[topbar=brand]:hover:bg-topbar-item-bg-hover-brand group-data-[topbar=brand]:hover:text-topbar-item-hover-brand group-data-[topbar=dark]:dark:bg-zink-700 group-data-[topbar=dark]:dark:hover:bg-zink-600 group-data-[topbar=brand]:text-topbar-item-brand group-data-[topbar=dark]:dark:hover:text-zink-50 group-data-[topbar=dark]:dark:text-zink-200 group-data-[topbar=dark]:text-topbar-item-dark "
+                            class="inline-flex justify-center relative items-center p-0 text-slate-500 transition-all w-10 h-10 duration-200 ease-linear bg-slate-50 border border-slate-100 rounded-xl dropdown-toggle hover:bg-slate-100 hover:text-slate-800 dark:bg-zink-700 dark:text-zink-200 dark:hover:bg-zink-600 dark:border-zink-600 shadow-sm"
                             id="notificationDropdown" data-bs-toggle="dropdown">
-
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                stroke-linejoin="round" data-lucide="bell-ring"
-                                class="lucide lucide-bell-ring inline-block w-5 h-5 stroke-1 fill-slate-100 group-data-[topbar=dark]:fill-topbar-item-bg-hover-dark group-data-[topbar=brand]:fill-topbar-item-bg-hover-brand">
-                                <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path>
-                                <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path>
-                                <path d="M4 2C2.8 3.7 2 5.7 2 8"></path>
-                                <path d="M22 8c0-2.3-.8-4.3-2-6"></path>
-                            </svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path><path d="M4 2C2.8 3.7 2 5.7 2 8"></path><path d="M22 8c0-2.3-.8-4.3-2-6"></path></svg>
                             @if (Auth::check() && Auth::user()->unreadNotifications()->count() > 0)
-                                <span class="absolute top-0 right-0 flex w-1.5 h-1.5" id="notification-indicator">
-                                    <span
-                                        class="absolute inline-flex w-full h-full rounded-full opacity-75 animate-ping bg-sky-400"></span>
-                                    <span class="relative inline-flex w-1.5 h-1.5 rounded-full bg-sky-500"></span>
+                                <span class="absolute top-0 right-0 flex w-2.5 h-2.5" id="notification-indicator">
+                                    <span class="absolute inline-flex w-full h-full rounded-full opacity-75 animate-ping bg-rose-400"></span>
+                                    <span class="relative inline-flex w-2.5 h-2.5 rounded-full bg-rose-500 border border-white"></span>
                                 </span>
                             @endif
                         </button>
@@ -275,36 +267,26 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div> --}}
 
                     {{-- ----------------------------------------------Settings Drop down---------------------------------------------- --}}
-                    <div class="relative items-center hidden h-header md:flex">
+                    {{-- <div class="relative items-center hidden h-[76px] md:flex">
                         <button data-drawer-target="customizerButton" type="button"
-                            class="inline-flex justify-center items-center p-0 text-topbar-item transition-all w-[37.5px] h-[37.5px] duration-200 ease-linear bg-topbar group-data-[topbar=dark]:text-topbar-item-dark rounded-md btn hover:bg-topbar-item-bg-hover hover:text-topbar-item-hover group-data-[topbar=dark]:bg-topbar-dark group-data-[topbar=dark]:hover:bg-topbar-item-bg-hover-dark group-data-[topbar=dark]:hover:text-topbar-item-hover-dark group-data-[topbar=brand]:bg-topbar-brand group-data-[topbar=brand]:hover:bg-topbar-item-bg-hover-brand group-data-[topbar=brand]:hover:text-topbar-item-hover-brand group-data-[topbar=dark]:dark:bg-zink-700 group-data-[topbar=dark]:dark:hover:bg-zink-600 group-data-[topbar=brand]:text-topbar-item-brand group-data-[topbar=dark]:dark:hover:text-zink-50 group-data-[topbar=dark]:dark:text-zink-200">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                stroke-linecap="round" stroke-linejoin="round" data-lucide="settings"
-                                class="lucide lucide-settings inline-block w-5 h-5 stroke-1 fill-slate-100 group-data-[topbar=dark]:fill-topbar-item-bg-hover-dark group-data-[topbar=brand]:fill-topbar-item-bg-hover-brand">
-                                <path
-                                    d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z">
-                                </path>
-                                <circle cx="12" cy="12" r="3"></circle>
-                            </svg>
+                            class="inline-flex justify-center items-center p-0 text-slate-500 transition-all w-10 h-10 duration-200 ease-linear bg-slate-50 border border-slate-100 rounded-xl hover:bg-slate-100 hover:text-slate-800 dark:bg-zink-700 dark:text-zink-200 dark:hover:bg-zink-600 dark:border-zink-600 shadow-sm">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg>
                         </button>
-                    </div>
+                    </div> --}}
 
                     {{-- ----------------------------------------------Profile Drop down---------------------------------------------- --}}
-                    <div class="relative flex items-center dropdown h-header">
+                    <div class="relative flex items-center dropdown h-[76px]">
                         <button type="button"
-                        class="relative inline-block p-0 transition-all duration-200 ease-linear bg-topbar rounded-full text-topbar-item dropdown-toggle btn hover:bg-topbar-item-bg-hover hover:text-topbar-item-hover group-data-[topbar=dark]:text-topbar-item-dark group-data-[topbar=dark]:bg-topbar-dark group-data-[topbar=dark]:hover:bg-topbar-item-bg-hover-dark group-data-[topbar=dark]:hover:text-topbar-item-hover-dark group-data-[topbar=brand]:bg-topbar-brand group-data-[topbar=brand]:hover:bg-topbar-item-bg-hover-brand group-data-[topbar=brand]:hover:text-topbar-item-hover-brand group-data-[topbar=dark]:dark:bg-zink-700 group-data-[topbar=dark]:dark:hover:bg-zink-600 group-data-[topbar=brand]:text-topbar-item-brand group-data-[topbar=dark]:dark:hover:text-zink-50 group-data-[topbar=dark]:dark:text-zink-200"
+                        class="relative inline-block p-1 border-2 border-slate-100 dark:border-zink-700 transition-all duration-200 ease-linear rounded-full dropdown-toggle remove-caret hover:border-blue-500 shadow-sm"
                         id="dropdownMenuButton" data-bs-toggle="dropdown">
                         <div class="relative">
                             <img src="{{Auth::check() && auth()->user()->avatar ? asset(auth()->user()->avatar) : asset('/backend/images/user.png') }}"
-                                alt="{{Auth::check() && auth()->user()->name }}" class="w-[37.5px] h-[37.5px] rounded-full">
+                                alt="{{Auth::check() && auth()->user()->name }}" class="w-10 h-10 rounded-full object-cover">
                             <!-- Active Status Button -->
-                            <div
-                                class="absolute bottom-0 p-1 right-0 w-2.5 h-2.5 bg-green-500 border-2 border-white rounded-full">
-                            </div>
+                            <div class="absolute bottom-0 p-1 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></div>
                         </div>
                     </button>
 
@@ -312,17 +294,17 @@
                             aria-labelledby="dropdownMenuButton">
                             <h6 class="mb-2 text-sm font-normal text-slate-500 dark:text-zink-300">Welcome to
                                 {{ config('app.name') }}</h6>
-                            <a href="#!" class="flex gap-3 mb-3">
+                            <a href="{{ route('setting.profile.index') }}" class="flex items-center gap-3 mb-3">
                                 <div class="relative inline-block shrink-0">
                                     <div class="rounded-full">
                                         <img src="{{Auth::check() && auth()->user()->avatar ? asset(auth()->user()->avatar) : asset('/backend/images/user.png') }}"
                                             alt="{{Auth::check() && auth()->user()->name }}" class="w-12 h-12 rounded-full">
                                     </div>
                                 </div>
-                                <div>
-                                    <h6 class="mb-1 text-15">{{Auth::check() && auth()->user()->name }}</h6>
-                                    {{--<p class="text-slate-500 dark:text-zink-300">{{auth()->user()->role}}</p> --}}
-                                </div>
+                                <h6 class="mb-1 text-15">{{ auth()->user()->name }}</h6>
+                                {{-- <div>
+                                    <p class="text-slate-500 dark:text-zink-300">{{auth()->user()->role}}</p>
+                                </div> --}}
                             </a>
                             <ul>
                                 <li>

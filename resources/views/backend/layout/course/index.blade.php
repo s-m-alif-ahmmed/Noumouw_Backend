@@ -66,7 +66,7 @@
                     <tr>
                         <th>#</th>
                         <th>Name</th>
-                        <th>Subcription Type</th>
+                        <th>Subscription Type</th>
                         <th>Tags</th>
                         <th>Thumbnail</th>
                         <th>Status</th>
@@ -361,7 +361,11 @@
 
         //File Drofify
         $(document).ready(function() {
-            $('.dropify').dropify();
+            $('.dropify').dropify({
+                tpl: {
+                    message: '<div class="dropify-message"><span class="file-icon"></span> <p style="font-size: 24px;">Upload file here</p></div>'
+                }
+            });
 
         })
 

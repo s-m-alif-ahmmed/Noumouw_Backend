@@ -1,5 +1,6 @@
 <?php
 
+use App\Services\FCMService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
@@ -49,3 +50,11 @@ Route::get('/private-video/{path}', function ($path) {
 })->where('path', '.*')->name('private.video');
 
 
+Route::middleware('auth:sanctum')->get('/test-push', function () {
+    // $usertoken = FirebaseToken::where('user_id', auth()->id())->first();    
+    // $token = $usertoken->token;
+    $fcmService = new FCMService();
+    // dd($fcmService);
+    $fcmService->sendMessage('fuwN0-4Mg0gKoELWBFCC4h:APA91bH9jBy9zBDPwQs12dD245ValkPt8nvqtUwH7BV9QsmKhq41R93JN20YGvVqd7jik04PgnYOW48hTOxxdkTTmKyAp69VFwWGs9VM1lPosHYFjzupI-I', 'Test Push', 'success');
+    return "Success";
+});

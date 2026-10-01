@@ -20,7 +20,12 @@ class SubscriptionPlan extends Model
         'name' => 'string',
         'duration' => 'string',
         'price' => 'string',
-        'revenue_cart_product_id' => 'integer',
+        'revenue_cart_product_id' => 'string',
+    ];
+
+    protected $hidden = [
+        'created_at',
+        'updated_at'
     ];
 
 }

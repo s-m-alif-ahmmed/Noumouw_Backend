@@ -433,8 +433,9 @@ if (sessionStorage.getItem("data-mode") === "dark") {
 }
 function lightDarkMode() {
     var lightDarkBtn = document.getElementById('light-dark-mode');
+    if(!lightDarkBtn) return;
     lightDarkBtn.addEventListener('click', () => {
-        if (sessionStorage.getItem("data-mode") === "light") {
+        if (sessionStorage.getItem("data-mode") === "light" || !sessionStorage.getItem("data-mode")) {
             // set attributes
             setAttrItemAndTag("data-mode", "dark");
             setAttrItemAndTag("data-sidebar", "dark");
@@ -445,6 +446,7 @@ function lightDarkMode() {
             updateActiveBtn("topbarColorTwo");
             updateActiveBtn("dataModeTwo");
             document.documentElement.classList.add("fl-dark");
+            document.documentElement.classList.add("dark");
         } else {
             // set attributes
             setAttrItemAndTag("data-mode", "light");
@@ -456,6 +458,7 @@ function lightDarkMode() {
             updateActiveBtn("topbarColorOne");
             updateActiveBtn("dataModeOne");
             document.documentElement.classList.remove("fl-dark");
+            document.documentElement.classList.remove("dark");
         }
     })
 }
@@ -592,14 +595,17 @@ function layoutSwitch(isLayoutAttributes) {
                 case "dark":
                     setAttrItemAndTag("data-mode", "dark");
                     updateActiveBtn("dataModeTwo")
+                    document.documentElement.classList.add("dark");
                     break;
                 case "light":
                     setAttrItemAndTag("data-mode", "light");
                     updateActiveBtn("dataModeOne")
+                    document.documentElement.classList.remove("dark");
                     break;
                 default:
                     setAttrItemAndTag("data-mode", "light");
                     updateActiveBtn("dataModeTwo")
+                    document.documentElement.classList.remove("dark");
                     break;
             }
             switch (isLayoutAttributes["data-layout"]) {
@@ -890,9 +896,23 @@ function windowScroll() {
 
 //Modal scripts
 
+function hideModalBackdrops(){
+    document.getElementById('backDropDiv')?.classList.add('hidden');
+    document.querySelectorAll('.backdrop-overlay, .modal-backdrop').forEach(backdrop => {
+        backdrop.classList.add('hidden');
+    });
+    document.body.classList.remove('overflow-hidden', 'modal-open');
+}
+
 function clearModal(modalId){
-    document.getElementById(modalId).classList.add('hidden');
-    document.getElementById(modalId + '-overlay').classList.add('hidden');
+    const modal = document.getElementById(modalId);
+    const overlay = document.getElementById(modalId + '-overlay');
+
+    modal?.classList.add('hidden');
+    modal?.classList.remove('flex');
+    overlay?.classList.add('hidden');
+    hideModalBackdrops();
+
     let form = $(`#${modalId}`).find('form');
     if (form.length > 0){
         form[0].reset()
@@ -904,8 +924,12 @@ document.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('[data-modal-open]').forEach(button => {
         button.addEventListener('click', function () {
             const modalId = this.getAttribute('data-modal-open');
-            document?.getElementById(modalId)?.classList?.remove('hidden');
+            const modal = document.getElementById(modalId);
+
+            modal?.classList?.remove('hidden');
+            modal?.classList?.add('flex');
             document?.getElementById(modalId + '-overlay')?.classList?.remove('hidden');
+            document.getElementById('backDropDiv')?.classList.add('hidden');
         });
     });
 
@@ -942,8 +966,12 @@ function initOpenModal(){
     document.querySelectorAll('[data-modal-open]').forEach(button => {
         button.addEventListener('click', function () {
             const modalId = this.getAttribute('data-modal-open');
-            document?.getElementById(modalId)?.classList?.remove('hidden');
+            const modal = document.getElementById(modalId);
+
+            modal?.classList?.remove('hidden');
+            modal?.classList?.add('flex');
             document?.getElementById(modalId + '-overlay')?.classList?.remove('hidden');
+            document.getElementById('backDropDiv')?.classList.add('hidden');
         });
     });
 }
@@ -958,7 +986,9 @@ function openEditModalById(modalId,data){
         }
     }
     modal.classList.remove('hidden');
+    modal.classList.add('flex');
     document.getElementById(modalId + '-overlay').classList.remove('hidden');
+    document.getElementById('backDropDiv')?.classList.add('hidden');
 }
 
 

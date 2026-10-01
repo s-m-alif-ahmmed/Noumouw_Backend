@@ -17,24 +17,23 @@ class InstructorController extends Controller
 
             return DataTables::of($data)
                 ->addIndexColumn()
-                ->addColumn('avatar', function ($data) {
-                    $defaultImage = asset('backend/user.png');
-                    $url = asset($data->avatar) ?? $defaultImage;
-                    $avatar = '<img src="' . $url . '" width="50px">';
-
-                    return $avatar;
+                ->addColumn('avatar_url', function ($data) {
+                    return $data->avatar ? asset($data->avatar) : asset('backend/images/user.png');
+                })
+                ->addColumn('status', function ($data) {
+                    return 'active'; // Default status for existing instructors
                 })
                 ->addColumn('action', function ($data) {
-                    return '<div role="group" style="gap: 10px;display: flex;">
-                    <button data-modal-open="edit-get-start" class="edit flex items-center justify-center w-8 h-8 transition-all rounded-md bg-slate-100 text-slate-500 hover:text-custom-500 hover:bg-custom-100 dark:bg-zink-600 dark:text-zink-200" data-id="' . $data->id . '">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"></path><path d="m15 5 4 4"></path></svg>
-                    </button>
-                    <a href="#!" onclick="showDeleteConfirm(' . $data->id . ')" class="flex items-center justify-center w-8 h-8 transition-all rounded-md bg-slate-100 text-slate-500 hover:text-red-500 hover:bg-red-100 dark:bg-zink-600 dark:text-zink-200">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path><line x1="10" x2="10" y1="11" y2="17"></line><line x1="14" x2="14" y1="11" y2="17"></line></svg>
-                    </a>
-                </div>';
+                    return '<div role="group" style="gap: 10px;display: flex; justify-content: center; text-align: center">
+                        <button class="edit flex items-center justify-center w-8 h-8 transition-all rounded-md bg-slate-100 text-slate-500 hover:text-custom-500 hover:bg-custom-100 dark:bg-zink-600 dark:text-zink-200" data-id="' . $data->id . '" title="Edit Instructor">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"></path><path d="m15 5 4 4"></path></svg>
+                        </button>
+                        <a href="#!" onclick="showDeleteConfirm(' . $data->id . ')" class="flex items-center justify-center w-8 h-8 transition-all rounded-md bg-slate-100 text-slate-500 hover:text-red-500 hover:bg-red-100 dark:bg-zink-600 dark:text-zink-200">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path><line x1="10" x2="10" y1="11" y2="17"></line><line x1="14" x2="14" y1="11" y2="17"></line></svg>
+                        </a>
+                    </div>';
                 })
-                ->rawColumns(['avatar', 'action'])
+                ->rawColumns(['action'])
                 ->make(true);
         }
 
@@ -50,7 +49,7 @@ class InstructorController extends Controller
             'name'          => 'required|string|max:100',
             'avatar'        => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'bio'           => 'required|string',
-            'phone'         => 'required|phone',
+            'phone'         => 'required',
             'role'          => 'required',
             'designation'   => 'required',
             'country'       => 'required',

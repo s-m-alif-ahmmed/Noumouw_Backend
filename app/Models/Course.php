@@ -17,12 +17,15 @@ class Course extends Model
         'description',
         'thumbnail',
         'status',
-        'subscription_plans_id'
+        'subscription_plans_id',
+        'category_id'
     ];
 
     protected $hidden = [
         'subscription_plans_id',
-        'description'
+        'description',
+        'category_id',
+        'updated_at'
     ];
 
     protected $casts = [
@@ -31,7 +34,24 @@ class Course extends Model
         'thumbnail' => 'string',
         'status' => 'string',
         'subscription_plans_id' => 'integer',
+        'category_id' => 'integer',
     ];
+
+    protected $appends = [
+        'average_rating',
+    ];
+
+    public function subscriptions()
+    {
+        return $this->hasMany(UserSubscription::class);
+    }
+
+    // public function 
+
+    public function category(): BelongsTo
+    {
+        return $this->belongsTo(Category::class);
+    }
 
     public function tags(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
@@ -67,6 +87,14 @@ class Course extends Model
         }
         // Return only the path for web requests
         return $value;
+    }
+
+    public function ratings(){
+        return $this->hasMany(CourseRating::class);
+    }
+
+    public function getAverageRatingAttribute(){
+        return round((float) ($this->ratings()->avg('rating') ?? 0.0), 1);
     }
 
 }

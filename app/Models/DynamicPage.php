@@ -23,4 +23,9 @@ class DynamicPage extends Model
         'page_slug' => 'string',
         'status' => 'string',
     ];
+
+    protected $hidden = [
+        'created_at',
+        'updated_at'
+    ];
 }

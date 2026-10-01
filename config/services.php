@@ -51,7 +51,11 @@ return [
     ],
 
     'firebase' => [
-        'credentials' => storage_path('app/private/contributions-ca2ba-43868bbd8254.json'),
+        'credentials' => storage_path('app/private/noumouw-83ed9-firebase-adminsdk-alhl9-4830ef64d7.json'),
+    ],
+
+    'revenuecat' => [
+        'webhook_secret' => env('REVENUECAT_WEBHOOK_SECRET')
     ],
 
 ];

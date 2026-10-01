@@ -10,9 +10,10 @@ use Illuminate\Http\Request;
 
 class TagController extends Controller
 {
-    public function index(){
+    public function index(Request $request){
+        $per_page = $request->per_page ?? 10;
         try{
-            $tags = Tag::paginate(10);
+            $tags = Tag::paginate($per_page);
             if (!$tags) {
                 return Helper::jsonErrorResponse('Tags not found', 404);
             }

@@ -1,5 +1,6 @@
 <?php
 
+use App\Helpers\VideoStream;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\TagController;
 use App\Http\Controllers\API\CourseController;
@@ -16,11 +17,20 @@ use App\Http\Controllers\API\Auth\RegisterController;
 use App\Http\Controllers\API\FirebaseTokenController;
 use App\Http\Controllers\API\SubscriptionPlanController;
 use App\Http\Controllers\API\AcceptPushNotificationController;
+use App\Http\Controllers\API\RatingsController;
+use App\Http\Controllers\API\RevenueCatController;
+use App\Http\Controllers\API\SupportController;
 use App\Http\Controllers\API\VideoController;
+use App\Models\DynamicPage;
+use App\Models\Video;
+use Illuminate\Http\Request;
+
+//! Dynamic pages - 
+Route::get('dynamic-page/{slug}', function($slug) {  
+    return response()->json(DynamicPage::where('page_slug', $slug)->first());
+});
 
 
-//! support api routes
-Route::post('/contact/support', [App\Http\Controllers\API\SupportController::class, 'supportMail']);
 
 //! Get Start Message Route
 Route::get('get-start', [GetStartController::class, 'index']);
@@ -39,6 +49,9 @@ Route::middleware(['guest'])->group(function () {
 
 Route::middleware('auth:sanctum')->group(function () {
 
+    //! support api routes
+    Route::post('/contact/support', [SupportController::class, 'supportMail']);
+
     //logout
     Route::post('logout', [LoginController::class, 'logout']);
 
@@ -46,6 +59,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('user', [LoginController::class, 'user']);
     Route::get('user-tag/list', [LoginController::class, 'userTags']);
     Route::post('profile-update', [LoginController::class, 'profile_update']);
+    Route::delete('profile/delete', [LoginController::class, 'profileDelete']);
 
     //tag routes
     Route::get('/tags', [TagController::class, 'index']);
@@ -65,12 +79,20 @@ Route::middleware('auth:sanctum')->group(function () {
 
     //Course Routes
     Route::get('courses',[CourseController::class,'index']);
-    Route::get('course/{id}',[CourseController::class,'show']);
-    Route::get('search-course', [CourseController::class, 'searchCourse']);
+    Route::get('course/plan', [CourseController::class, 'course_subscription_plan']);
+    Route::get('course/subscribed-course', [CourseController::class, 'getSubscribedCourses']);
+    Route::delete('course/unsubscribe/{id}', [CourseController::class, 'unsubscribe']);
+//    Route::get('search-course', [CourseController::class, 'searchCourse']);
+    Route::get('/progress', [CourseController::class, 'progress']);
+    Route::get('course/{id}',[CourseController::class,'show'])->whereNumber('id');
+
+    //Subscribe to course
+    Route::post('course/subscribe', [CourseController::class, 'subscribe']);
 
     //Content Routes
     Route::get('contents', [ContentController::class, 'index']);
     Route::get('content/{id}', [ContentController::class, 'show']);
+    Route::post('content/completion/{id}', [ContentController::class, 'completion']);
 
     //Activity Routes
     Route::get('activities', [ActivityController::class, 'index']);
@@ -97,6 +119,11 @@ Route::middleware('auth:sanctum')->group(function () {
     //video Routes
     Route::get('videos', [VideoController::class, 'index']);
     Route::get('video/{id}', [VideoController::class, 'show']);
+    
+    Route::get('video/stream/{id}', function ($id, Request $request){
+        $video = Video::find($id);
+        return VideoStream::stream($video, $request);
+    });
 
     Route::post('/video/{videoId}/update-progress', [VideoController::class, 'updateProgress']);
     Route::get('/video/{videoId}/progress', [VideoController::class, 'getVideoProgress']);
@@ -107,6 +134,12 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/user-ai-tag/store', [TagController::class, 'aiTagStore']);
 
+    Route::group(['prefix' => 'ratings'], function(){
+        Route::get('/', [RatingsController::class, 'index'])->name('ratings.index');
+        Route::post('/store', [RatingsController::class, 'store'])->name('ratings.store');
+        Route::delete('/delete/{id}', [RatingsController::class, 'delete'])->name('ratings.delete');
+    });
+
 });
 
 
@@ -115,3 +148,5 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::post("firebase/token/add", [FirebaseTokenController::class, "store"]);
 Route::post("firebase/token/get", [FirebaseTokenController::class, "getToken"]);
 Route::post("firebase/token/detele", [FirebaseTokenController::class, "deleteToken"]);
+// Route for RevenueCat Webhook
+Route::post('/revenuecat/webhook', [RevenueCatController::class, 'webhook']);

@@ -133,6 +133,50 @@
             <p class="text-slate-500 dark:text-zink-200">Total Subscription Plans</p>
         </div>
     </div>
+
+    <div class="col-span-12 card md:col-span-6 lg:col-span-3 2xl:col-span-2">
+        <div class="text-center card-body">
+            <div class="flex items-center justify-center mx-auto rounded-full size-14 bg-custom-100 text-custom-500 dark:bg-custom-500/20">
+                <i data-lucide="help-circle"
+                   class="h-4 group-data-[sidebar-size=sm]:h-5 group-data-[sidebar-size=sm]:w-5 transition group-hover/menu-link:animate-icons fill-slate-100 group-hover/menu-link:fill-blue-200 group-data-[sidebar=dark]:dark:fill-zink-600 group-data-[layout=horizontal]:dark:fill-zink-600 group-data-[sidebar=dark]:group-hover/menu-link:dark:fill-custom-500/20 group-data-[layout=horizontal]:dark:group-hover/menu-link:fill-custom-500/20 group-data-[sidebar-size=md]:block group-data-[sidebar-size=md]:mx-auto group-data-[sidebar-size=md]:mb-2"></i>
+            </div>
+            <h5 class="mt-4 mb-2"><span class="counter-value" data-target="{{$support}}">0</span></h5>
+            <p class="text-slate-500 dark:text-zink-200">Support Tickets</p>
+        </div>
+    </div>
+
+    <div class="col-span-12 card md:col-span-6 lg:col-span-3 2xl:col-span-2">
+        <div class="text-center card-body">
+            <div class="flex items-center justify-center mx-auto rounded-full size-14 bg-custom-100 text-custom-500 dark:bg-custom-500/20">
+                <i data-lucide="list-todo"
+                   class="h-4 group-data-[sidebar-size=sm]:h-5 group-data-[sidebar-size=sm]:w-5 transition group-hover/menu-link:animate-icons fill-slate-100 group-hover/menu-link:fill-blue-200 group-data-[sidebar=dark]:dark:fill-zink-600 group-data-[layout=horizontal]:dark:fill-zink-600 group-data-[sidebar=dark]:group-hover/menu-link:dark:fill-custom-500/20 group-data-[layout=horizontal]:dark:group-hover/menu-link:fill-custom-500/20 group-data-[sidebar-size=md]:block group-data-[sidebar-size=md]:mx-auto group-data-[sidebar-size=md]:mb-2"></i>
+            </div>
+            <h5 class="mt-4 mb-2"><span class="counter-value" data-target="{{$pendingSupport}}">0</span></h5>
+            <p class="text-slate-500 dark:text-zink-200">Pending Support Tickets</p>
+        </div>
+    </div>
+
+    <div class="col-span-12 card md:col-span-6 lg:col-span-3 2xl:col-span-2">
+        <div class="text-center card-body">
+            <div class="flex items-center justify-center mx-auto rounded-full size-14 bg-custom-100 text-custom-500 dark:bg-custom-500/20">
+                <i data-lucide="bug-off"
+                   class="h-4 group-data-[sidebar-size=sm]:h-5 group-data-[sidebar-size=sm]:w-5 transition group-hover/menu-link:animate-icons fill-slate-100 group-hover/menu-link:fill-blue-200 group-data-[sidebar=dark]:dark:fill-zink-600 group-data-[layout=horizontal]:dark:fill-zink-600 group-data-[sidebar=dark]:group-hover/menu-link:dark:fill-custom-500/20 group-data-[layout=horizontal]:dark:group-hover/menu-link:fill-custom-500/20 group-data-[sidebar-size=md]:block group-data-[sidebar-size=md]:mx-auto group-data-[sidebar-size=md]:mb-2"></i>
+            </div>
+            <h5 class="mt-4 mb-2"><span class="counter-value" data-target="{{$resolvedSupport}}">0</span></h5>
+            <p class="text-slate-500 dark:text-zink-200">Resolved Tickets</p>
+        </div>
+    </div>
+
+    <div class="col-span-12 card md:col-span-6 lg:col-span-3 2xl:col-span-2">
+        <div class="text-center card-body">
+            <div class="flex items-center justify-center mx-auto rounded-full size-14 bg-custom-100 text-custom-500 dark:bg-custom-500/20">
+                <i data-lucide="check-check"
+                   class="h-4 group-data-[sidebar-size=sm]:h-5 group-data-[sidebar-size=sm]:w-5 transition group-hover/menu-link:animate-icons fill-slate-100 group-hover/menu-link:fill-blue-200 group-data-[sidebar=dark]:dark:fill-zink-600 group-data-[layout=horizontal]:dark:fill-zink-600 group-data-[sidebar=dark]:group-hover/menu-link:dark:fill-custom-500/20 group-data-[layout=horizontal]:dark:group-hover/menu-link:fill-custom-500/20 group-data-[sidebar-size=md]:block group-data-[sidebar-size=md]:mx-auto group-data-[sidebar-size=md]:mb-2"></i>
+            </div>
+            <h5 class="mt-4 mb-2"><span class="counter-value" data-target="{{$closedSupport}}">0</span></h5>
+            <p class="text-slate-500 dark:text-zink-200">Closed Tickets</p>
+        </div>
+    </div>
     <!--end col-->
 
     {{-- <div class="col-span-12 card 2xl:col-span-12">

@@ -55,6 +55,6 @@
         @yield('content')
     </div>
 </div>
-@include('backend.partials.script')
+    @include('backend.partials.script')
 </body>
 </html>

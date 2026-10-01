@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API\Auth;
 use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
 use App\Models\Tag;
+use App\Models\User;
 use App\Models\UserTag;
 use Ichtrojan\Otp\Otp;
 use Illuminate\Http\Request;
@@ -99,6 +100,7 @@ class LoginController extends Controller
             'parent_role' => 'sometimes|required|in:father,mother',
             'is_parent' => 'sometimes|required|boolean',
             'country' => 'sometimes|required|string',
+            'number_of_children' => 'sometimes|required|integer|min:0',
             'children' => 'sometimes|required|array',
             'children.*.name' => 'sometimes|required|string',
             'children.*.date_of_birth' => 'sometimes|required|date|before:today|date_format:Y-m-d',
@@ -153,6 +155,9 @@ class LoginController extends Controller
                         'birth_date' => $child['date_of_birth'],
                     ]);
                 }
+            }else if($request->has('number_of_children') && $request->number_of_children == 0){
+                $user->children()->delete(); // Clear old records if number of children is set to 0
+
             }
 
             return Helper::jsonResponse(true, 'Profile updated successfully.', 200, $user->load('profile', 'children'));
@@ -162,5 +167,16 @@ class LoginController extends Controller
         }
     }
 
+    public function profileDelete() {
+        $user = Auth::user(); 
+
+        if (!$user) {
+            return Helper::jsonResponse(false, 'Unauthorized.', 401);
+        }
+
+        $user->delete();
+
+        return Helper::jsonResponse(true, 'Profile deleted successfully.', 200);
+    }
 
 }

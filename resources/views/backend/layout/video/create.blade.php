@@ -129,7 +129,11 @@
     <script type="text/javascript" src="https://jeremyfagis.github.io/dropify/dist/js/dropify.min.js"></script>
     <script>
         $(document).ready(function() {
-            $('.dropify').dropify();
+           $('.dropify').dropify({
+                tpl: {
+                    message: '<div class="dropify-message"><span class="file-icon"></span> <p style="font-size: 24px;">Upload file here</p></div>'
+                }
+            });
         })
 
         function calculateVideoDuration(input) {
@@ -137,16 +141,32 @@
             if (file && file.type.includes("video")) {
                 const videoElement = document.createElement("video");
                 videoElement.preload = "metadata";
-
-                // Set the video source to the selected file
                 videoElement.src = URL.createObjectURL(file);
 
                 videoElement.onloadedmetadata = function() {
-                    // Once metadata is loaded, you can access the video duration
-                    $("input[name='duration']").val(videoElement.duration);
+                    // Try to find hidden input in parent (for components) or document (for standalone)
+                    let hiddenInput = input.parentElement.querySelector("input[name='duration']");
+                    if (!hiddenInput) {
+                        hiddenInput = document.querySelector("input[name='duration']");
+                    }
+
+                    if (hiddenInput) {
+                        const duration = videoElement.duration;
+                        const hours = Math.floor(duration / 3600);
+                        const minutes = Math.floor((duration % 3600) / 60);
+                        const seconds = Math.floor(duration % 60);
+                        
+                        const formattedDuration = 
+                            String(hours).padStart(2, '0') + ":" + 
+                            String(minutes).padStart(2, '0') + ":" + 
+                            String(seconds).padStart(2, '0');
+                            
+                        $(hiddenInput).val(formattedDuration);
+                    }
+                    URL.revokeObjectURL(videoElement.src);
                 };
             } else {
-                flasher.error('Invalid Video');
+                if (typeof flasher !== 'undefined') flasher.error('Invalid Video');
             }
         }
     </script>

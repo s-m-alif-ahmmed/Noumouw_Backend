@@ -117,17 +117,23 @@ class EvaluationController extends Controller
                 return Helper::jsonErrorResponse('Evaluation result not found', 404);
             }
 
-            // Calculate wrong answers and ensure the result is always an array
-            $wrongAnswers = $result->evaluation_answers->filter(function ($answer) {
-                return $answer->user->answer !== $answer->question->answer;
-            })->map(function ($answer) {
-                return [
-                    'question_id' => $answer->question->id ?? null,
-                    'title' => $answer->question->title ?? null,
-                    'correct_answer' => $answer->question->answer ?? null,
-                    'link' => $answer->question->link ?? null,
-                ];
-            })->values(); // Ensures it's a sequential array
+            // Get the current user's ID
+            $userId = Auth::id();
+
+            // Calculate wrong answers for the current user only
+            $wrongAnswers = $result->evaluation_answers
+                ->where('user_id', $userId)
+                ->filter(function ($answer) {
+                    // Compare the user's answer with the correct answer from the question
+                    return $answer->answer != $answer->question->answer;
+                })->map(function ($answer) {
+                    return [
+                        'question_id' => $answer->question->id ?? null,
+                        'title' => $answer->question->title ?? null,
+                        'correct_answer' => $answer->question->answer ?? null,
+                        'link' => $answer->question->link ?? null,
+                    ];
+                })->values(); // Ensures it's a sequential array
 
             // Get the total number of questions
             $totalQuestions = $result->questions->count();

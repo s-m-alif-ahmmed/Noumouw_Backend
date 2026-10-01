@@ -182,7 +182,11 @@
     <script>
       $(document).ready(function() {
         // Initialize Dropify
-        $('.dropify').dropify();
+        $('.dropify').dropify({
+                tpl: {
+                    message: '<div class="dropify-message"><span class="file-icon"></span> <p style="font-size: 24px;">Upload file here</p></div>'
+                }
+            });
 
         // Add Gallery Image
         let imageSectionCount = {{ count($data->images) }};
@@ -200,7 +204,11 @@
                         data-height="200" />
                 </div>
             `);
-            $('.dropify').dropify();
+            $('.dropify').dropify({
+                tpl: {
+                    message: '<div class="dropify-message"><span class="file-icon"></span> <p style="font-size: 24px;">Upload file here</p></div>'
+                }
+            });
         });
 
         // Remove Gallery Image

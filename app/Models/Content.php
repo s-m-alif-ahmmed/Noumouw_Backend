@@ -53,7 +53,13 @@ class Content extends Model
 
     public function podcasts(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
-        return $this->hasMany(Podcast::class);
+        return $this->hasMany(related: Podcast::class);
     }
+
+    public function contentCompletions()
+    {
+        return $this->hasMany(ContentCompletion::class);
+    }
+
 
 }

@@ -174,7 +174,11 @@
 
     <script>
         $(document).ready(function() {
-            $('.dropify').dropify();
+            $('.dropify').dropify({
+                tpl: {
+                    message: '<div class="dropify-message"><span class="file-icon"></span> <p style="font-size: 24px;">Upload file here</p></div>'
+                }
+            });
 
             //title to slug
             $("#title").on('keyup', function() {
@@ -195,7 +199,11 @@
              <input type="file" name="images[]" id="gallery_${imageSectionCount}"
                     class="dropify form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200" data-height="200" />
          </div>`)
-            $('.dropify').dropify();
+            $('.dropify').dropify({
+                tpl: {
+                    message: '<div class="dropify-message"><span class="file-icon"></span> <p style="font-size: 24px;">Upload file here</p></div>'
+                }
+            });
         })
 
         //remove gallery image

@@ -64,11 +64,11 @@ class PodcastController extends Controller
                     return $status;
                 })
                 ->addColumn('action', function ($data) {
-                    return '<div role="group" style="gap: 10px;display: flex;">
-                        <a class="flex items-center justify-center w-8 h-8 transition-all rounded-md bg-slate-100 text-slate-500 hover:text-custom-500 hover:bg-custom-100 dark:bg-zink-600 dark:text-zink-200" href="'.route('podcast.edit', $data->id).'">
+                    return '<div role="group" style="gap: 10px;display: flex; text-alighn">
+                        <a class="flex items-center justify-center w-8 h-8 transition-all rounded-md bg-slate-100 text-slate-500 hover:text-custom-500 hover:bg-custom-100 dark:bg-zink-600 dark:text-zink-200" href="' . route('podcast.edit', $data->id) . '">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"></path><path d="m15 5 4 4"></path></svg>
                         </a>
-                        <a href="#!" onclick="showDeleteConfirm('.$data->id.')" class="flex items-center justify-center w-8 h-8 transition-all rounded-md bg-slate-100 text-slate-500 hover:text-red-500 hover:bg-red-100 dark:bg-zink-600 dark:text-zink-200">
+                        <a href="#!" onclick="showDeleteConfirm(' . $data->id . ')" class="flex items-center justify-center w-8 h-8 transition-all rounded-md bg-slate-100 text-slate-500 hover:text-red-500 hover:bg-red-100 dark:bg-zink-600 dark:text-zink-200">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path><line x1="10" x2="10" y1="11" y2="17"></line><line x1="14" x2="14" y1="11" y2="17"></line></svg>
                         </a>
                     </div>';
@@ -97,12 +97,12 @@ class PodcastController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
-            'file' => 'required|mimes:audio/mpeg,mp3|max:10240',
+            'title'         => 'required|string|max:255',
+            'description'   => 'required|string',
+            'file'          => 'required|mimes:audio/mpeg,mp3',
             'instructor_id' => 'required|exists:instructors,id',
-            'course_id' => 'required|exists:courses,id',
-            'tags.*' => 'required|exists:tags,id',
+            'course_id'     => 'required|exists:courses,id',
+            'tags.*'        => 'required|exists:tags,id',
         ]);
 
         try{
@@ -122,19 +122,19 @@ class PodcastController extends Controller
             $newOrder = $maxOrder + 1;
 
             $podcast =  Podcast::create([
-                'title' => $request->title,
-                'description' => $request->description,
-                'file' => $file_path,
+                'title'         => $request->title,
+                'description'   => $request->description,
+                'file'          => $file_path,
                 'instructor_id' => $request->instructor_id,
-                'course_id' => $request->course_id
+                'course_id'     => $request->course_id
             ]);
             $podcast->tags()->attach($request->tags);
 
             $course->contents()->create([
-                'order' => $newOrder,
-                'type' => 'podcast',
-                'contentable_id' => $podcast->id,
-                'contentable_type' => Podcast::class,
+                'order'             => $newOrder,
+                'type'              => 'podcast',
+                'contentable_id'    => $podcast->id,
+                'contentable_type'  => Podcast::class,
             ]);
 
             DB::commit();
@@ -161,11 +161,11 @@ class PodcastController extends Controller
     public function edit($id)
     {
 
-        $data = Podcast::findOrFail($id);
+        $data           = Podcast::findOrFail($id);
         $selectedTagIds = PodcastTag::where('podcast_id', $id)->pluck('tag_id')->toArray();
-        $allTags = Tag::all();
-        $courses = Course::all();
-        $instructors = Instructor::all();
+        $allTags        = Tag::all();
+        $courses        = Course::all();
+        $instructors    = Instructor::all();
         return view('backend.layout.podcast.edit', compact('data', 'allTags', 'selectedTagIds', 'instructors','courses'));
     }
 
@@ -184,7 +184,7 @@ class PodcastController extends Controller
                 'description'   => $podcast->description,
                 'course_id'     => $data->course_id,
                 'tags'          => $podcast->tags->pluck('id'),
-                'file_url'      => asset($podcast->file),
+                'file_url'      => str_starts_with($podcast->file, 'uploads/') ? asset($podcast->file) : asset('storage/' . $podcast->file),
             ]
         ]);
     }
@@ -193,11 +193,11 @@ class PodcastController extends Controller
     public function update(Request $request, string $id)
     {
         $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
-            'file' => 'nullable|file',
-            'instructor_id' => 'nullable|exists:instructors,id',
-            'tags.*' => 'exists:tags,id',
+            'title'             => 'required|string|max:255',
+            'description'       => 'required|string',
+            'file'              => 'nullable|file',
+            'instructor_id'     => 'nullable|exists:instructors,id',
+            'tags.*'            => 'exists:tags,id',
         ]);
 
         try{
@@ -209,7 +209,12 @@ class PodcastController extends Controller
                     Helper::fileDelete(public_path($podcast->file));
                 }
                 $file_path = Helper::fileUpload($request->file('file'), 'podcast', getFileName($request->file('file')));
-            }else{
+            } elseif ($request->input('remove_file') == 1) {
+                if ($podcast->file) {
+                    Helper::fileDelete(public_path($podcast->file));
+                }
+                $file_path = 'uploads/podcast/default.mp3';
+            } else {
                 $file_path = $podcast->file;
             }
 

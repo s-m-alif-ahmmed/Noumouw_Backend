@@ -73,6 +73,10 @@ class User extends Authenticatable implements MustVerifyEmail
         ];
     }
 
+    protected $appends = [
+        // 'subscribed_course_rating',
+    ];
+
     public function getAvatarAttribute($value): string | null
     {
         if (filter_var($value, FILTER_VALIDATE_URL)) {
@@ -92,11 +96,13 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasOne(Profile::class);
     }
+
     public function children(): HasMany
     {
         return $this->hasMany(Children::class);
     }
-    public function firebaseTokens(): User|HasMany
+
+    public function firebaseTokens(): HasMany
     {
         return $this->hasMany(FirebaseTokens::class,'user_id');
     }
@@ -105,5 +111,16 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->belongsToMany(Tag::class, 'user_tags', 'user_id', 'tag_id')->withTimestamps();
     }
+
+    public function subscribed_courses(){
+        return $this->hasMany(UserSubscription::class);
+    }
+
+    // public function getSubscribedCourseRatingAttribute(){
+    //     $courseIds = $this->subscribed_courses()->pluck('course_id');
+    //     return CourseRating::whereIn('course_id', $courseIds)->with('user:id,name,avatar')->get();
+    // }
+
+    
 
 }

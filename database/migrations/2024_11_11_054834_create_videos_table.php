@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('videos', function (Blueprint $table) {
             $table->id();
             $table->string('title');
+            $table->text('image')->nullable();
             $table->text('file');
             $table->time('duration');
             $table->foreignId('instructor_id')->nullable()->constrained('instructors')->nullOnDelete();

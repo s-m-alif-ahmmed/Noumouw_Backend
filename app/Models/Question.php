@@ -23,9 +23,11 @@ class Question extends Model
         'evaluation_id' => 'integer',
     ];
 
+    protected $hidden = [
+    ];
+
     public function evaluation(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
-        return $this->belongsTo(Evaluation::class,'evaluation_id');
+        return $this->belongsTo(Evaluation::class, 'evaluation_id');
     }
-
 }

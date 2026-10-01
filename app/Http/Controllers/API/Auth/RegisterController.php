@@ -22,7 +22,7 @@ class RegisterController extends Controller
             }else{
                 $avatar = null;
             }
-
+            
             \DB::beginTransaction();
 
             $user = User::create([
@@ -46,12 +46,13 @@ class RegisterController extends Controller
                 ]);
             }
 
-            //send email verification otp
-            $this->send_otp($user);
+            $otp = $this->send_otp($user);
 
             \DB::commit();
 
-            return Helper::jsonResponse(true,'Register successfully',201);
+            return Helper::jsonResponse(true,'Register successfully',201, [
+                'otp' => $otp->token,
+            ]);
 
         }catch (\Exception $exception){
             \DB::rollBack();
@@ -64,8 +65,10 @@ class RegisterController extends Controller
     {
         $otp  = (new Otp)->generate($user->email, 'numeric', 6, 60);
         $message = $mailType === 'verify' ? 'Verify Your Email Address' : 'Reset Your Password';
-        \Mail::to($user->email)->send(new \App\Mail\OTP($otp->token,$user,$message,$mailType));
-//        return $otp;
+        if (filter_var($user->email, FILTER_VALIDATE_EMAIL)) {
+            \Mail::to($user->email)->send(new \App\Mail\OTP($otp->token,$user,$message,$mailType));
+        }
+        return $otp;
     }
 
     public function resend_otp(Request $request)

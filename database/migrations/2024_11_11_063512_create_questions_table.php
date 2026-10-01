@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->boolean('answer');
-            $table->text('link');
+            $table->text('link')->nullable();
             $table->foreignId('evaluation_id')->nullable()->constrained('evaluations')->nullOnDelete();
             $table->timestamps();
         });

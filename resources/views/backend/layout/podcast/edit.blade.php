@@ -163,7 +163,11 @@
 
     <script>
         $(document).ready(function() {
-            $('.dropify').dropify();
+            $('.dropify').dropify({
+                tpl: {
+                    message: '<div class="dropify-message"><span class="file-icon"></span> <p style="font-size: 24px;">Upload file here</p></div>'
+                }
+            });
         })
     </script>
 

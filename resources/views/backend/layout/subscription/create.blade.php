@@ -1,6 +1,6 @@
 @extends('backend.app')
 
-@section('title', 'subscription')
+@section('title', 'Subscription')
 @section('title_url')
     <a href="{{ route('subscription.index') }}">Subscription</a>
 @endsection
@@ -56,7 +56,7 @@
 
                     <div class="w-full   md:w-1/2">
                         <div>
-                            <x-backend.input type="number" name="price" label="Price" :required="true" />
+                            <x-backend.input type="number" name="price" step="0.01" label="Price" :required="true" />
                         </div>
                          <div  style="margin-top:20px">
                             <x-backend.input type="text" name="revenue_cart_product_id"  label="Revenue Cart Product ID" :required="true" />

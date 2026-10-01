@@ -99,7 +99,7 @@
                 </div>
 
                <div class="flex w-full gap-x-5">
-                   <!-- Tags Field -->
+                   <!-- Thumbnail -->
                    <div class="w-1/2 file-section">
                        <x-backend.dropify :src="$data->thumbnail" name="thumbnail"  label="Thumbnail" :required="true"/>
                    </div>
@@ -131,7 +131,11 @@
 
     <script>
         $(document).ready(function() {
-            $('.dropify').dropify();
+            $('.dropify').dropify({
+                tpl: {
+                    message: '<div class="dropify-message"><span class="file-icon"></span> <p style="font-size: 24px;">Upload file here</p></div>'
+                }
+            });
 
         })
     </script>

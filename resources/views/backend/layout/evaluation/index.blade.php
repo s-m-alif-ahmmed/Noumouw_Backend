@@ -158,6 +158,7 @@
             let url = "{{ route('evaluation.index') }}";
             let dTable = $('#basic_tables').DataTable({
                 order: [],
+                ordering: false,
                 destroy: true,
                 lengthMenu: [
                     [25, 50, 100, 200, 500, -1],

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Web\Backend;
 
 use App\Http\Controllers\Controller;
+use App\Helpers\Helper;
+use App\Models\Profile;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -17,7 +19,7 @@ class UserController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $data = User::latest()->get();
+            $data = User::where('role', 'user')->latest()->get();
 
             return DataTables::of($data)
                 ->addIndexColumn()
@@ -31,30 +33,27 @@ class UserController extends Controller
                 ->addColumn('parent_role', fn($data) => $data->profile->parent_role ?? 'N/A')
                 ->addColumn('country', fn($data) => $data->profile->country ?? 'N/A')
                 ->addColumn('children_count', fn($data) => $data->children->count() ?? 0)
-                ->addColumn('role', fn($data) => ucfirst($data->role))
+                // ->addColumn('role', fn($data) => ucfirst($data->role))
                 ->addColumn('avatar', function ($data) {
                     $defaultImage = asset('backend/user.png');
                     $url = $data->avatar ? asset($data->avatar) : $defaultImage;
-                    return '<img src="' . $url . '" alt="Image" width="50px" height="50px">';
+                    return '<img src="' . $url . '" alt="Image" class="w-10 h-10 rounded-full object-cover shadow-sm border border-slate-100 mx-auto">';
                 })
                 ->addColumn('status', function ($data) {
-                    $backgroundColor  = $data->status == "active" ? '#4CAF50' : '#ccc';
-                    $sliderTranslateX = $data->status == "active" ? '26px' : '2px';
-                    $sliderStyles     = "position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; background-color: white; border-radius: 50%; transition: transform 0.3s ease; transform: translateX($sliderTranslateX);";
-
-                    return '<div class="form-check form-switch" style="margin-left:40px; position: relative; width: 50px; height: 24px; background-color: ' . $backgroundColor . '; border-radius: 12px; transition: background-color 0.3s ease; cursor: pointer;">
-                            <input onclick="showStatusChangeAlert(' . $data->id . ')" type="checkbox" class="form-check-input" id="customSwitch' . $data->id . '" name="status" style="position: absolute; width: 100%; height: 100%; opacity: 0; z-index: 2; cursor: pointer;">
-                            <span style="' . $sliderStyles . '"></span>
-                            <label for="customSwitch' . $data->id . '" class="form-check-label" style="margin-left: 10px;"></label>
-                        </div>';
+                    $isChecked = $data->status == "active" ? 'checked' : '';
+                    return '
+                        <label class="relative inline-flex items-center cursor-pointer ml-4">
+                            <input type="checkbox" class="sr-only peer" id="customSwitch' . $data->id . '" onchange="showStatusChangeAlert(' . $data->id . ')" ' . $isChecked . '>
+                            <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[\'\'] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
+                        </label>';
                 })
                 ->addColumn('action', function ($data) {
-                    return '<div role="group" style="gap: 10px;display: flex;">
-                        <a class="flex items-center justify-center w-8 h-8 transition-all rounded-md bg-slate-100 text-slate-500 hover:text-custom-500 hover:bg-custom-100 dark:bg-zink-600 dark:text-zink-200" href="' . route('user.show', $data->id) . '">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /></svg>
+                    return '<div class="flex justify-center gap-2">
+                        <a href="' . route('user.show', $data->id) . '" class="flex items-center justify-center size-8 transition-all rounded-lg bg-slate-100 text-slate-500 hover:text-custom-500 hover:bg-custom-100 dark:bg-zink-600 dark:text-zink-200">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"></path><path d="m15 5 4 4"></path></svg>
                         </a>
-                        <a href="#!" onclick="showDeleteConfirm('.$data->id.')" class="flex items-center justify-center w-8 h-8 transition-all rounded-md bg-slate-100 text-slate-500 hover:text-red-500 hover:bg-red-100 dark:bg-zink-600 dark:text-zink-200">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path><line x1="10" x2="10" y1="11" y2="17"></line><line x1="14" x2="14" y1="11" y2="17"></line></svg>
+                        <a href="#!" onclick="showDeleteConfirm('.$data->id.')" class="flex items-center justify-center size-8 transition-all rounded-lg bg-slate-100 text-slate-500 hover:text-red-500 hover:bg-red-100 dark:bg-zink-600 dark:text-zink-200">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path><line x1="10" x2="10" y1="11" y2="17"></line><line x1="14" x2="14" y1="11" y2="17"></line></svg>
                         </a>
                     </div>';
                 })
@@ -67,17 +66,111 @@ class UserController extends Controller
 
     public function show($id)
     {
-        $data = User::find($id);
+        $data = User::with('profile')->find($id);
         if (!$data) {
             return redirect()->back()->with('t-error', 'User not found');
         }
         return view('backend.layout.user.view', compact('data'));
     }
 
+    public function edit($id)
+    {
+        $data = User::with(['profile', 'children'])->find($id);
+        if (!$data) {
+            return redirect()->route('user.index')->with('t-error', 'User not found');
+        }
+        return view('backend.layout.user.edit', compact('data'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $data = User::with('profile')->find($id);
+        if (!$data) {
+            return redirect()->back()->with('t-error', 'User not found');
+        }
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,' . $data->id,
+            'role' => 'required|string|max:100',
+            'status' => 'required|in:active,inactive',
+            'birth_date' => 'required|date',
+            'parent_role' => 'nullable|in:father,mother',
+            'country' => 'required|string|max:100',
+            'is_parent' => 'nullable|boolean',
+            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'children' => 'nullable|array',
+            'children.*.id' => 'nullable|integer|exists:childrens,id',
+            'children.*.name' => 'nullable|string|max:255',
+            'children.*.birth_date' => 'nullable|date',
+            'children_to_delete' => 'nullable|array',
+            'children_to_delete.*' => 'nullable|integer|exists:childrens,id',
+        ]);
+
+        $data->name = $request->name;
+        $data->email = $request->email;
+        $data->role = $request->role;
+        $data->status = $request->status;
+
+        if ($request->hasFile('avatar')) {
+            if ($data->avatar && file_exists(public_path($data->avatar))) {
+                Helper::fileDelete(public_path($data->avatar));
+            }
+            $avatarPath = Helper::fileUpload($request->file('avatar'), 'user/avatar', $request->file('avatar')->getClientOriginalName());
+            if ($avatarPath) {
+                $data->avatar = $avatarPath;
+            }
+        }
+
+        $data->save();
+
+        Profile::updateOrCreate(
+            ['user_id' => $data->id],
+            [
+                'birth_date' => $request->birth_date ?: optional($data->profile)->birth_date,
+                'parent_role' => $request->parent_role ?: optional($data->profile)->parent_role ?: 'father',
+                'country' => $request->country ?: optional($data->profile)->country,
+                'is_parent' => $request->has('is_parent') ? 1 : 0,
+            ]
+        );
+
+        if ($request->filled('children_to_delete')) {
+            $data->children()->whereIn('id', $request->children_to_delete)->delete();
+        }
+
+        foreach ($request->input('children', []) as $childData) {
+            $name = trim($childData['name'] ?? '');
+            $birthDate = $childData['birth_date'] ?? null;
+
+            if ($name === '' && empty($birthDate)) {
+                continue;
+            }
+
+            if (!empty($childData['id'])) {
+                $child = $data->children()->find($childData['id']);
+                if ($child) {
+                    $child->update([
+                        'name' => $name,
+                        'birth_date' => $birthDate,
+                    ]);
+                    continue;
+                }
+            }
+
+            $data->children()->create([
+                'name' => $name,
+                'birth_date' => $birthDate,
+            ]);
+        }
+
+        flash()->success('User profile updated successfully.');
+        return redirect()->route('user.show', $data->id);
+    }
+
     public function userChildren($id, Request $request)
     {
         if ($request->ajax()) {
-            $user = User::find($id);
+            $user = User::with('profile', 'children')->find($id);
 
             if (!$user) {
                 return response()->json(['error' => 'User not found'], 404);

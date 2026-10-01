@@ -9,6 +9,7 @@ export default {
         './resources/views/**/*.blade.php',
         './app/Http/Controllers/Web/**/*.php'
     ],
+    darkMode: ['class', '[data-mode="dark"]'],
 
     theme: {
         extend: {

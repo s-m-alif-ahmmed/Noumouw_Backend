@@ -15,9 +15,12 @@ use Yajra\DataTables\DataTables;
 use App\Helpers\Helper;
 use App\Models\Instructor;
 use Illuminate\Support\Facades\DB;
+use App\Traits\ChunkFileUpload;
+// use RahulHaque\Filepond\Facades\Filepond;
 
 class VideoController extends Controller
 {
+    use ChunkFileUpload;
 
     public function index(Request $request)
     {
@@ -82,44 +85,64 @@ class VideoController extends Controller
     public function ajaxStore(Request $request)
     {
         $request->validate([
-            'title'   => 'required|string|max:100',
-            'file' => 'required|mimes:mp4,ogg,webm|max:10240',
-            'course_id' => 'required|exists:courses,id',
+            'title'         => 'required|string|max:100',
+            // 'file'          => 'required|string', // Changed for FilePond
+            'file_path'     => 'required|string', // New for custom chunk upload
+            'course_id'     => 'required|exists:courses,id',
             'instructor_id' => 'required|exists:instructors,id',
-            'tags' => 'required|array',
-            'tags.*' => 'required|exists:tags,id',
+            'tags'          => 'required|array',
+            'tags.*'        => 'required|exists:tags,id',
         ]);
 
         try {
-            if (!$request->duration || !isUnsignedBigInt($request->duration) || $request->duration < 0) {
-                return redirect()->back()->withInput()->withErrors([
-                    'file'=> 'Invalid duration of this video',
+            // Validate duration - allow HH:MM:SS or numeric seconds
+            $duration = $request->duration;
+            if (!$duration) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Video duration is required'
                 ]);
             }
 
-            // Store the uploaded file
-            if ($request->hasFile('file') && $request->file('file')->isValid()) {
-                if (!Storage::disk('public')->exists('course/video')) {
-                    Storage::disk('public')->makeDirectory('course/video');
-                }
-                $file_path = $request->file('file')->store('course/video', 'public');
-            } else {
-                $file_path = Storage::disk('public')->url('course/video/default.mp4');
+            // If it's numeric (seconds), convert to HH:MM:SS
+            if (is_numeric($duration)) {
+                $duration = gmdate("H:i:s", (int) round($duration));
             }
+
+            // Image
+            if ($request->hasFile('image') && $request->file('image')->isValid()) {
+                $thumbnail_path = Helper::fileUpload($request->file('image'), 'video', getFileName($request->file('image')));
+            } else {
+                $thumbnail_path = 'uploads/video/default.png';
+            }
+
+            // Store the uploaded file
+            /* if ($request->filled('file')) {
+                $file_path = Filepond::field($request->file)->moveTo('course/video/' . time() . '_' . uniqid())['location'];
+            } else {
+                $file_path = 'course/video/default.mp4';
+            } */
+            $file_path = $request->file_path ?? 'course/video/default.mp4';
 
             DB::beginTransaction();
 
             $course = Course::find($request->course_id);
+            if (!$course) {
+                return response()->json(['success' => false, 'message' => 'Course not found']);
+            }
 
             // Get the highest order value and increment by 1
             $maxOrder = $course->contents()->max('order') ?? 0;
             $newOrder = $maxOrder + 1;
 
+            $formattedDuration = $duration;
+
             // Create the video
             $video = Video::create([
                 'title' => $request->title,
-                'duration' => $request->duration,
+                'duration' => $formattedDuration,
                 'file' => $file_path,
+                'image' => $thumbnail_path,
                 'instructor_id' => $request->instructor_id,
             ]);
 
@@ -156,11 +179,11 @@ class VideoController extends Controller
     {
 
         $request->validate([
-            'title'   => 'required|string|max:100',
-            'file' => 'required|mimes:mp4,ogg,webm|max:10240',
-            'course_id' => 'required|exists:courses,id',
+            'title'         => 'required|string|max:100',
+            'file'          => 'required|mimes:mp4,ogg,webm',
+            'course_id'     => 'required|exists:courses,id',
             'instructor_id' => 'required|exists:instructors,id',
-            'tags.*' => 'required|exists:tags,id',
+            'tags.*'        => 'required|exists:tags,id',
         ]);
 
         try {
@@ -185,18 +208,18 @@ class VideoController extends Controller
             $newOrder = $maxOrder + 1;
 
             $video = Video::create([
-                'title' => $request->title,
-                'duration' => $request->duration,
-                'file' => $file_path,
+                'title'         => $request->title,
+                'duration'      => $request->duration,
+                'file'          => $file_path,
                 'instructor_id' => $request->instructor_id,
             ]);
             $video->tags()->attach($request->tags);
 
             $course->contents()->create([
-                'order' => $newOrder,
-                'type'=>'video',
-                'contentable_id'=> $video->id,
-                'contentable_type' => Video::class,
+                'order'             => $newOrder,
+                'type'              =>'video',
+                'contentable_id'    => $video->id,
+                'contentable_type'  => Video::class,
             ]);
 
             DB::commit();
@@ -212,11 +235,11 @@ class VideoController extends Controller
 
     public function edit($id)
     {
-        $data = Video::with(['content.course'])->findOrFail($id);
-        $instructors = Instructor::all();
-        $selectedTagIds = VideoTag::where('video_id', $id)->pluck('tag_id')->toArray();
-        $allTags = Tag::all();
-        $courses = Course::all();
+        $data               = Video::with(['content.course'])->findOrFail($id);
+        $instructors        = Instructor::all();
+        $selectedTagIds     = VideoTag::where('video_id', $id)->pluck('tag_id')->toArray();
+        $allTags            = Tag::all();
+        $courses            = Course::all();
         return view('backend.layout.video.edit', compact('data', 'allTags', 'selectedTagIds', 'instructors','courses'));
     }
 
@@ -234,7 +257,8 @@ class VideoController extends Controller
                 'instructor_id' => $video->instructor_id,
                 'course_id'     => $data->course_id,
                 'tags'          => $video->tags->pluck('id'),
-                'file_url'      => asset($video->file),
+                'file_url'      => str_starts_with($video->file, 'uploads/') ? asset($video->file) : asset('storage/' . $video->file),
+                'image'         => str_starts_with($video->image, 'uploads/') ? asset($video->image) : asset('storage/' . $video->image)
             ]
         ]);
     }
@@ -242,28 +266,56 @@ class VideoController extends Controller
     public function update(Request $request, string $id)
     {
         $request->validate([
-            'title'   => 'required|string|max:100',
-            'file' => 'nullable|mimes:mp4,ogg,webm',
-            'course_id' => 'required|exists:courses,id',
-            'instructor_id' => 'required|exists:instructors,id',
-            'tags.*' => 'exists:tags,id',
+            'title'             => 'required|string|max:100',
+            // 'file'              => 'nullable|string', // Changed for FilePond
+            'file_path'         => 'nullable|string', // New for custom chunk upload
+            'course_id'         => 'required|exists:courses,id',
+            'instructor_id'     => 'required|exists:instructors,id',
+            'tags.*'            => 'exists:tags,id',
         ]);
 
         try {
-            if (($request->hasFile('file') && $request->file('file')->isValid()) && (!$request->duration || !isUnsignedBigInt($request->duration) || $request->duration < 0)) {
-                redirect()->back()->withInput()->withErrors([
-                    'file'=> 'Invalid duration of this video',
-                ]);
+            // Validate duration if a new file is uploaded
+            if ($request->filled('file')) {
+                $duration = $request->duration;
+                if (!$duration) {
+                    return response()->json(['success' => false, 'message' => 'Video duration is required']);
+                }
+                if (is_numeric($duration)) {
+                    $duration = gmdate("H:i:s", (int) round($duration));
+                }
+            } else {
+                $video = Video::findOrFail($id);
+                $duration = $video->duration;
             }
-            $video = Video::findOrFail($id);
-            $course = Course::find($request->course_id);
+            $video      = Video::findOrFail($id);
+            $course     = Course::find($request->course_id);
 
-            if ($request->hasFile('file') && $request->file('file')->isValid()) {
+            // image
+            if ($request->hasFile('image') && $request->file('image')->isValid()) {
+                Helper::fileDelete(public_path($video->image)); // Delete old file
+                $thumbnail_path = Helper::fileUpload($request->file('image'), 'course', getFileName($request->file('image')));
+            } elseif ($request->input('remove_image') == 1) {
+                Helper::fileDelete(public_path($video->image));
+                $thumbnail_path = 'uploads/video/default.png';
+            } else {
+                $thumbnail_path = $video->image;
+            }
+
+            // video
+            if ($request->filled('file_path')) {
                 if (Storage::disk('public')->exists($video->file)) {
                     Storage::disk('public')->delete($video->file);
                 }
-                $file_path = $request->file('file')->store('course/video', 'public');
+                // $file_path = Filepond::field($request->file)->moveTo('course/video/' . time() . '_' . uniqid())['location'];
+                $file_path = $request->file_path;
                 $duration = $request->duration;
+            } elseif ($request->input('remove_file') == 1) {
+                if (Storage::disk('public')->exists($video->file)) {
+                    Storage::disk('public')->delete($video->file);
+                }
+                $file_path = 'course/video/default.mp4';
+                $duration = '00:00:00';
             } else {
                 $file_path = $video->file;
                 $duration = $video->duration;
@@ -271,10 +323,11 @@ class VideoController extends Controller
             DB::beginTransaction();
 
             $video->update([
-                'title' => $request->title,
-                'duration' => $duration,
-                'file' => $file_path,
+                'title'         => $request->title,
+                'duration'      => $duration,
+                'file'          => $file_path,
                 'instructor_id' => $request->instructor_id,
+                'image'         => $thumbnail_path,
             ]);
 
             $video->tags()->sync($request->tags);
@@ -372,5 +425,22 @@ class VideoController extends Controller
             'success' => true,
             'message' => 'Item status changed successfully.',
         ], 200);
+    }
+
+    public function chunkUpload(Request $request)
+    {
+        $fileName = $request->input('file_name', $request->header('X-File-Name'));
+        $folder = 'course/video';
+
+        $param = [
+            'chunk'        => $request->file('file'),
+            'index'        => $request->input('index'),
+            'total_chunks' => $request->input('total_chunks'),
+            'temp_id'      => $request->input('temp_id'),
+        ];
+
+        $result = $this->handleChunkedUploadPublic($fileName, $param, $folder);
+
+        return response()->json($result);
     }
 }

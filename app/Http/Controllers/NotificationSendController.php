@@ -61,19 +61,54 @@ class NotificationSendController extends Controller
                 $notification->withImageUrl(url($path));
             }
 
-
             // Determine which users to notify
             $usersToNotify = $this->getUsersToNotify($request);
 
             // Send notifications
+            $sentCount = 0;
             foreach ($usersToNotify as $user) {
+                if ($user->firebaseTokens->isEmpty()) {
+                    \Log::info("No active Firebase tokens found for user ID: {$user->id}");
+                    continue;
+                }
+
                 foreach ($user->firebaseTokens as $token) {
-                    $this->sendNotificationToUser($firebaseMessaging, $notification,$token->token);
+                    try {
+                        if (empty($token->token)) {
+                            \Log::warning("Empty token for user ID: {$user->id}");
+                            continue;
+                        }
+
+                        \Log::info("Sending to token: {$token->token}");
+
+                        $this->sendNotificationToUser($firebaseMessaging, $notification, $token->token);
+                        $sentCount++;
+
+                    } catch (\Kreait\Firebase\Exception\Messaging\NotFound $e) {
+                        // ❌ Token is invalid / deleted
+                        \Log::warning("Invalid token (NotFound): {$token->token}");
+
+                        $token->update(['is_active' => '0']); // deactivate token
+
+                    } catch (\Kreait\Firebase\Exception\Messaging\InvalidArgument $e) {
+                        // ❌ Malformed token
+                        \Log::warning("Invalid token format: {$token->token}");
+
+                        $token->update(['is_active' => '0']);
+
+                    } catch (\Kreait\Firebase\Exception\MessagingException $e) {
+                        // ❌ Other FCM errors
+                        \Log::error("FCM error for token {$token->token}: " . $e->getMessage());
+
+                    } catch (\Exception $e) {
+                        // ❌ Any unexpected error
+                        \Log::error("Unexpected error: " . $e->getMessage());
+                    }
                 }
 
             }
 
-            return redirect()->back()->with('success', 'Notification sent successfully');
+            return redirect()->back()->with('success', "Notification sent successfully.");
         } catch (\Exception $exception) {
             dd($exception);
             flash()->error('Failed to send notification. Please try again.');
@@ -89,24 +124,20 @@ class NotificationSendController extends Controller
 
     private function getUsersToNotify(Request $request)
     {
-        if ($request->user_selection_type === 'all') {
-            return User::where('role', 'user')
-                ->with(['firebaseTokens' => function ($query) {
-                    $query->where('is_active', '1');
-                }])
-                ->get();
-        }
+        $query = User::where('role', 'user')
+            ->whereHas('firebaseTokens', function ($q) {
+                $q->where('is_active', '1');
+            })
+            ->with(['firebaseTokens' => function ($q) {
+                $q->where('is_active', '1');
+            }]);
+
 
         if ($request->user_selection_type === 'specific') {
-            return User::whereIn('id', $request->user_ids)
-                ->with(['firebaseTokens' => function ($query) {
-                    $query->where('is_active', '1');
-                }])
-                ->get();
+            $query->whereIn('id', $request->user_ids);
         }
 
-
-        return collect(); // return an empty collection if no valid user selection type
+        return $query->get();
     }
 
     private function sendNotificationToUser($messaging, $notification,$token)

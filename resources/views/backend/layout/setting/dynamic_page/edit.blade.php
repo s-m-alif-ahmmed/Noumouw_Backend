@@ -14,9 +14,9 @@
     {{-- Add any specific styles for the User Dashboard page here --}}
     <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.0/dist/sweetalert2.min.css" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/Dropify/0.2.2/css/dropify.css">
-        {{-- CKEditor CDN --}}
-        <script src="https://cdn.ckeditor.com/ckeditor5/23.0.0/classic/ckeditor.js"></script>
-    
+    {{-- CKEditor CDN --}}
+    <script src="https://cdn.ckeditor.com/ckeditor5/23.0.0/classic/ckeditor.js"></script>
+
     <style>
         .text-center {
             text-align: end;
@@ -40,12 +40,14 @@
 @section('content')
     <div class="card">
         <div class="card-body max-sm:overflow-scroll">
-            <h1>Update Dynamic Page</h1>
-            <div class="flex justify-end mb-6">
-                <a href="{{ route('dynamic-page.index') }}"
-                    class="text-white btn bg-custom-500 border-custom-500 hover:text-white hover:bg-custom-600 hover:border-custom-600 focus:text-white focus:bg-custom-600 focus:border-custom-600 focus:ring focus:ring-custom-100 active:text-white active:bg-custom-600 active:border-custom-600 active:ring active:ring-custom-100 dark:ring-custom-400/20">Back</a>
+            <div class="flex justify-between items-center">
+                <h1>Update Dynamic Page</h1>
+                <div class="flex justify-end items-center mb-6">
+                    <a href="{{ route('dynamic-page.index') }}"
+                        class="text-white btn bg-custom-500 border-custom-500 hover:text-white hover:bg-custom-600 hover:border-custom-600 focus:text-white focus:bg-custom-600 focus:border-custom-600 focus:ring focus:ring-custom-100 active:text-white active:bg-custom-600 active:border-custom-600 active:ring active:ring-custom-100 dark:ring-custom-400/20">Back</a>
+                </div>
             </div>
-            <form action="{{ route('dynamic-page.update',$data->id) }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('dynamic-page.update', $data->id) }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
                 <div class="grid grid-cols-1 gap-5 xl:grid-cols-12">
@@ -56,7 +58,7 @@
                                 style="color: red">*</span></label>
                         <input type="text" name="page_title" id="page_title"
                             class="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200 @error('page_title') is-invalid @enderror"
-                            placeholder="Enter Page Title Here" value="{{ old('page_title',$data->page_title) }}">
+                            placeholder="Enter Page Title Here" value="{{ old('page_title', $data->page_title) }}" readonly>
                         @error('page_title')
                             <div style="color: red">{{ $message }}</div>
                         @enderror
@@ -67,7 +69,7 @@
                                 style="color: red">*</span> </label>
                         <textarea name="page_content" id="page_content"
                             class="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
-                            rows="3" placeholder="Enter Page Content Here">{{ old('page_content',$data->page_content) }} </textarea>
+                            rows="3" placeholder="Enter Page Content Here">{{ old('page_content', $data->page_content) }} </textarea>
                         @error('page_content')
                             <div style="color: red">{{ $message }}</div>
                         @enderror
@@ -76,7 +78,7 @@
                 </div><!--end grid-->
 
                 {{-- ------------------- Form Buttons ------------- --}}
-                <div class="flex justify-start mt-6 gap-x-4">
+                <div class="flex justify-end mt-6 gap-x-4">
                     <button type="submit"
                         class="text-white btn bg-custom-500 border-custom-500 hover:text-white hover:bg-custom-600 hover:border-custom-600 focus:text-white focus:bg-custom-600 focus:border-custom-600 focus:ring focus:ring-custom-100 active:text-white active:bg-custom-600 active:border-custom-600 active:ring active:ring-custom-100 dark:ring-custom-400/20">Submit</button>
                 </div>
@@ -105,6 +107,5 @@
             .catch(error => {
                 console.error(error);
             });
-
     </script>
 @endpush

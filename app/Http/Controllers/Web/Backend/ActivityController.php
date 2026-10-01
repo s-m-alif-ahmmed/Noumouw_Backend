@@ -98,9 +98,9 @@ class ActivityController extends Controller
                 }
             }
 
-            if (empty($imagePaths)) {
-                $imagePath[] = 'uploads/activity/default.png';
-            }
+            // if (empty($imagePaths)) {
+            //     $imagePath[] = 'uploads/activity/default.png';
+            // }
 
             DB::beginTransaction();
             $course = Course::find($request->course_id);
@@ -196,38 +196,43 @@ class ActivityController extends Controller
 
             $activity = Activity::findOrFail($id);
 
-            $oldImages = $activity->images;
+            if ($activity->images) {
+                $oldImages = is_array($activity->images) ? $activity->images : json_decode($activity->images, true);
+            } else {
+                $oldImages = [];
+            }
 
-            $imagePaths = [];
-
-
-
-            if ($request->hasFile('images') && count($request->file('images')) > 0) {
-                // ✅ Delete old images once here
-                if ($oldImages) {
-                    foreach ($oldImages as $oldImage) {
-                        if (file_exists(public_path($oldImage))) {
-                            unlink(public_path($oldImage));
+            // Handle removed images
+            $removedImages = $request->input('removed_images', []);
+            if (!empty($removedImages)) {
+                foreach ($removedImages as $removedImage) {
+                    // Remove from list
+                    if (($key = array_search($removedImage, $oldImages)) !== false) {
+                        unset($oldImages[$key]);
+                        // Delete file
+                        if (file_exists(public_path($removedImage))) {
+                            unlink(public_path($removedImage));
                         }
                     }
                 }
+                $oldImages = array_values($oldImages); // Reset keys
+            }
 
-                // ✅ Then upload new images
+            $imagePaths = $oldImages;
+
+            // Handle new images
+            if ($request->hasFile('images')) {
                 foreach ($request->file('images') as $image) {
                     if ($image->isValid()) {
                         $imagePath = Helper::fileUpload($image, 'activity', getFileName($image));
                         $imagePaths[] = $imagePath;
                     }
                 }
-            } else {
-                // ✅ No new image uploaded — use existing images
-                $imagePaths = $oldImages;
             }
 
-
-            if (empty($imagePaths)) {
-                $imagePaths[] = 'uploads/activity/default.png';
-            }
+            // if (empty($imagePaths)) {
+            //     $imagePaths[] = 'uploads/activity/default.png';
+            // }
 
             DB::beginTransaction();
 
@@ -311,7 +316,6 @@ class ActivityController extends Controller
             ], 500);
         }
     }
-
 
     public function status($id)
     {

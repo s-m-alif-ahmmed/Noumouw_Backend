@@ -32,31 +32,138 @@
             border: 2px solid #f0f3f7;
             border-radius: 6px;
         }
+
+        .premium-card {
+            background: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+            border: 1px solid #f1f5f9;
+        }
+
+        #basic_tables_wrapper .dataTables_filter input {
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+            padding: 8px 16px;
+            outline: none;
+            width: 250px;
+            transition: all 0.3s;
+        }
+
+        #basic_tables_wrapper .dataTables_filter input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        #basic_tables {
+            border-collapse: separate !important;
+            border-spacing: 0 12px !important;
+            width: 100% !important;
+            border: none !important;
+        }
+
+        #basic_tables thead th {
+            color: #64748b;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 11px;
+            letter-spacing: 0.05em;
+            padding: 16px !important;
+            border: none !important;
+        }
+
+        #basic_tables tbody tr {
+            background: #ffffff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+            transition: all 0.3s;
+        }
+
+        #basic_tables tbody tr:hover {
+            /* transform: scale(1.005); */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            background: #fdfdfd;
+        }
+
+        #basic_tables tbody td {
+            padding: 16px !important;
+            border: none !important;
+            vertical-align: middle;
+        }
+
+        #basic_tables tbody tr td:first-child {
+            border-radius: 12px 0 0 12px;
+        }
+
+        #basic_tables tbody tr td:last-child {
+            border-radius: 0 12px 12px 0;
+        }
+
+        .dataTables_paginate {
+            margin: 10px !important;
+        }
+
+        .dataTables_paginate .paginate_button {
+            border-radius: 8px !important;
+            border: 1px solid #e2e8f0 !important;
+            margin: 0 2px !important;
+            transition: all 0.3s !important;
+        }
+
+        .dataTables_paginate .paginate_button.current {
+            background: #3b82f6 !important;
+            color: white !important;
+            border-color: #3b82f6 !important;
+        }
+
+        .dataTables_paginate .paginate_button:hover:not(.current) {
+            background: #f1f5f9 !important;
+        }
+
+        #basic_tables_wrapper .dataTables_scrollBody thead tr {
+            height: 0 !important;
+        }
+        #basic_tables_wrapper .dataTables_scrollBody thead th,
+        #basic_tables_wrapper .dataTables_scrollBody thead td {
+            padding: 0 !important;
+            border: none !important;
+            height: 0 !important;
+            line-height: 0 !important;
+            font-size: 0 !important;
+            overflow: hidden !important;
+        }
     </style>
 @endpush
 
 {{-- Main content of the News Dashboard page --}}
 @section('content')
-    <div class="card">
-        <div class="card-body max-sm:overflow-scroll">
-            <div class="flex justify-end mb-6">
-                <button data-modal-open="create-get-start"
-                    class="text-white btn bg-custom-500 border-custom-500 hover:text-white hover:bg-custom-600 hover:border-custom-600 focus:text-white focus:bg-custom-600 focus:border-custom-600 focus:ring
-                 focus:ring-custom-100 active:text-white active:bg-custom-600 active:border-custom-600 active:ring active:ring-custom-100 dark:ring-custom-400/20">Add
-                    Message</button>
+    <div class="premium-card overflow-hidden mb-8">
+        <div class="p-8">
+            <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+                <div>
+                    <h2 class="text-xl font-bold text-slate-800">Get Start Messages</h2>
+                    <p class="text-slate-500 text-sm">Manage the welcome messages shown to new users.</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button data-modal-open="create-get-start"
+                        class="text-white btn bg-custom-500 border-custom-500 hover:text-white hover:bg-custom-600 hover:border-custom-600 focus:text-white focus:bg-custom-600 focus:border-custom-600 focus:ring focus:ring-custom-100 active:text-white active:bg-custom-600 active:border-custom-600 active:ring active:ring-custom-100 dark:ring-custom-400/20">
+                        Add Message
+                    </button>
+                </div>
             </div>
-            <table id="basic_tables" class="display stripe group table-responsive">
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Message</th>
-                        <th>Status</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
+
+            <div class="overflow-x-auto">
+                <table id="basic_tables" class="w-full">
+                    <thead>
+                        <tr>
+                            <th class="w-16">#</th>
+                            <th>Message</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
@@ -94,8 +201,7 @@
             <div class="flex justify-end gap-2 mt-4">
                 <button type="submit"
                     class="text-white btn bg-custom-500 border-custom-500 hover:text-white hover:bg-custom-600 hover:border-custom-600 focus:text-white focus:bg-custom-600 focus:border-custom-600
-                     focus:ring focus:ring-custom-100 active:text-white active:bg-custom-600 active:border-custom-600 active:ring active:ring-custom-100 dark:ring-custom-400/20">Update
-                    Category</button>
+                     focus:ring focus:ring-custom-100 active:text-white active:bg-custom-600 active:border-custom-600 active:ring active:ring-custom-100 dark:ring-custom-400/20">Update Message</button>
             </div>
         </form>
     </x-backend.modal>
@@ -126,7 +232,11 @@
             let url = "{{ route('get-start.index') }}";
             let dTable = $('#basic_tables').DataTable({
                 order: [],
+                ordering: false,
                 destroy: true,
+                      scrollX: true,
+                scrollCollapse: true,
+                autoWidth: false,
                 lengthMenu: [
                     [25, 50, 100, 200, 500, -1],
                     [25, 50, 100, 200, 500, "All"]
@@ -158,7 +268,7 @@
                     },
                     {
                         data: 'description',
-                        name: 'desciption',
+                        name: 'description',
                         orderable: true,
                         searchable: true,
                         render: function(data, type, row) {
@@ -263,7 +373,31 @@
 
 
     <script>
+        function hideGetStartModalBackdrops() {
+            document.getElementById('backDropDiv')?.classList.add('hidden');
+            document.querySelectorAll('.backdrop-overlay, .modal-backdrop').forEach(function(backdrop) {
+                backdrop.classList.add('hidden');
+            });
+            document.body.classList.remove('overflow-hidden', 'modal-open');
+        }
+
+        function closeGetStartModal(modalId) {
+            document.getElementById(modalId)?.classList.add('hidden');
+            document.getElementById(modalId)?.classList.remove('flex', 'show');
+            document.getElementById(modalId + '-overlay')?.classList.add('hidden');
+            hideGetStartModalBackdrops();
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('[data-modal-close="create-get-start"], [data-modal-close="edit-get-start"]')
+                .forEach(function(button) {
+                    button.addEventListener('click', function() {
+                        closeGetStartModal(this.getAttribute('data-modal-close'));
+                        setTimeout(hideGetStartModalBackdrops, 0);
+                        setTimeout(hideGetStartModalBackdrops, 250);
+                    });
+                });
+
             $('#create-form').on('submit', function(e) {
                 NProgress.start();
                 e.preventDefault();
@@ -278,16 +412,23 @@
                         $('#basic_tables').DataTable().ajax.reload();
                         if (resp.success === true) {
                             // show toast message
+                            NProgress.done();
                             flasher.success(resp.message);
-                            clearModal('create-get-start')
+                            closeGetStartModal('create-get-start')
                         } else if (resp.errors) {
                             flasher.error(resp.errors[0]);
+                            NProgress.done();
+                            closeGetStartModal('create-get-start')
                         } else {
                             flasher.error(resp.message);
+                            NProgress.done();
+                            closeGetStartModal('create-get-start')
                         }
                     },
                     error: function(xhr) {
                         handleXhrErrors(xhr, 'create-get-start')
+                        NProgress.done();
+                        closeGetStartModal('create-get-start')
                     }
                 });
             });
@@ -328,7 +469,7 @@
                         if (resp.success === true) {
                             // show toast message
                             flasher.success(resp.message);
-                            clearModal('edit-get-start')
+                            closeGetStartModal('edit-get-start')
                         } else if (resp.errors) {
                             flasher.error(resp.errors[0]);
                         } else {
@@ -342,5 +483,4 @@
             });
         });
     </script>
-
 @endpush

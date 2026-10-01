@@ -8,6 +8,7 @@ use App\Http\Controllers\Web\Backend\TagController;
 use App\Http\Controllers\NotificationSendController;
 use App\Http\Controllers\Web\Backend\VideoController;
 use App\Http\Controllers\Web\Backend\CourseController;
+use App\Http\Controllers\Web\Backend\CategoryController;
 use App\Http\Controllers\Web\Backend\PodcastController;
 use App\Http\Controllers\Web\Backend\ActivityController;
 use App\Http\Controllers\Web\Backend\GetStartController;
@@ -23,6 +24,7 @@ use App\Http\Controllers\Web\Backend\Settings\DynamicPageController;
 use App\Http\Controllers\Web\Backend\Settings\PrivacyPolicyController;
 use App\Http\Controllers\Web\Backend\Settings\SystemSettingController;
 use App\Http\Controllers\Web\Backend\UserController;
+use App\Http\Controllers\Web\Backend\RatingsController;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 
@@ -36,20 +38,22 @@ Route::group(['middleware' => 'auth'],function(){
 
 Route::middleware(['web', 'auth','admin'])->group(function () {
 
-//    Dashboard
+    //    Dashboard
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('dashboard', [DashboardController::class,'index'])->name('dashboard');
 
-//    User
+    //    User
     Route::get('users', [UserController::class, 'index'])->name('user.index');
+    Route::get('users/{id}/edit', [UserController::class, 'edit'])->name('user.edit');
+    Route::put('users/update/{id}', [UserController::class, 'update'])->name('user.update');
     Route::get('users/{id}',[UserController::class,'show'])->name('user.show');
     Route::get('/user/show/children/{id}', [UserController::class, 'userChildren'])->name('user.show.children');
     Route::post('users/status/{id}', [UserController::class, 'status'])->name('user.status');
     Route::delete('users/delete/{id}',[UserController::class,'destroy'])->name('user.destroy');
 
 
-//  settings routes
+    //  settings routes
     Route::controller(SystemSettingController::class)->name('setting.')->group(function () {
         Route::get('setting-system','index')->name('system.index');
         Route::post('setting-update', 'update')->name('system.update');
@@ -62,11 +66,11 @@ Route::middleware(['web', 'auth','admin'])->group(function () {
         Route::post('setting-configuration-social', 'socialAppUpdate')->name('configuration.social');
     });
 
-//  Dynamic pages routes
+    //  Dynamic pages routes
     Route::resource('/dynamic-page', DynamicPageController::class);
     Route::post('/dynamic-page/status/{id}', [DynamicPageController::class, 'status'])->name('dynamic.page.status');
 
-//  admin profile routes
+    //  admin profile routes
     Route::controller(ProfileController::class)->name('setting.')->group(function () {
         Route::get('setting-profile', 'index')->name('profile.index');
         Route::post('setting-profile', 'update')->name('profile.update');
@@ -74,11 +78,11 @@ Route::middleware(['web', 'auth','admin'])->group(function () {
         Route::post('setting-profile-picture','UpdateProfilePicture')->name('profile.picture');
     });
 
-//  notification routes
+    //  notification routes
     Route::delete('/notifications/{id}', [NotificationController::class, 'deleteNotification'])->name('notifications.delete');
     Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllRead'])->name('notifications.mark-all-read');
 
-//! push Notification
+    //! push Notification
 
     Route::get('push-notifications', [NotificationSendController::class, 'index'])->name('push-notification.index');
     Route::post('send-push-notification', [NotificationSendController::class, 'sendNotification'])->name('send.notification');
@@ -87,19 +91,32 @@ Route::middleware(['web', 'auth','admin'])->group(function () {
     Route::resource('get-start', GetStartController::class)->except(['show']);
     Route::post('get-start/status/{id}', [GetStartController::class, 'status'])->name('get-start.status');
 
-//! Privacy Policy routes
+    //! Privacy Policy routes
     Route::resource('/privacy-policy', PrivacyPolicyController::class);
     Route::post('/privacy-policy/status/{id}', [PrivacyPolicyController::class, 'status'])->name('privacy.policy.status');
 
-//! Tag Routes
+    //! Category Routes
+    Route::resource('/category', CategoryController::class);
+    Route::post('/categories/status/{id}', [CategoryController::class, 'status'])->name('category.status');
+
+    //! Tag Routes
     Route::resource('/tag', TagController::class);
 
-//! Support  routes
+    //! Support  routes
     Route::get('/support',[SupportController::class,'index'])->name('support.index');
     Route::post('/support/send',[SupportController::class,'send'])->name('support.send');
+    Route::get('/support/tickets',[SupportController::class,'tickets'])->name('support.tickets');
+    Route::get('/support/tickets/show/{id}',[SupportController::class,'show'])->name('support.tickets.show');
+    Route::post('/support/tickets/status/{id}',[SupportController::class,'status'])->name('support.tickets.status');
+    Route::delete('/support/tickets/destroy/{id}',[SupportController::class,'destroy'])->name('support.tickets.destroy');
+
+    //! Ratings Routes
+    Route::get('ratings', [RatingsController::class, 'index'])->name('ratings.index');
+    Route::post('ratings/status/{id}', [RatingsController::class, 'status'])->name('ratings.status');
+    Route::delete('ratings/delete/{id}', [RatingsController::class, 'destroy'])->name('ratings.destroy');
 });
 
-
+Route::middleware(['web', 'auth','admin'])->group(function () {
 //! Instructor Routes
    Route::get('instructors',[InstructorController::class,'index'])->name('instructor.index');
    Route::post('instructor/store',[InstructorController::class,'store'])->name('instructor.store');
@@ -120,12 +137,18 @@ Route::middleware(['web', 'auth','admin'])->group(function () {
     Route::get('/course/content/details/{id}', [CourseController::class, 'getContentDetails'])->name('course.content.details');
     Route::post('/contents/update-order', [CourseController::class, 'updateOrder'])->name('contents.updateOrder');
 
+    Route::get('course_new',[CourseController::class,'index_new'])->name('course.index_new');
+    Route::get('course/create_new',[CourseController::class,'create_new'])->name('course.create_new');
+    Route::post('course/store_new',[CourseController::class,'store_new'])->name('course.store_new');
+    Route::get('course/edit_new/{id}',[CourseController::class,'edit_new'])->name('course.edit_new');
+    Route::put('course/update_new/{id}',[CourseController::class,'update_new'])->name('course.update_new');
 
 //! Video Routes
     Route::get('video',[VideoController::class,'index'])->name('video.index');
     Route::get('video/create',[VideoController::class,'create'])->name('video.create');
     Route::post('video/store',[VideoController::class,'store'])->name('video.store');
-    Route::post('video/ajax/store',[VideoController::class,'ajaxStore'])->name('video.ajax.store');
+    Route::post('video/ajax/store',[VideoController::class, 'ajaxStore'])->name('video.ajax.store');
+    Route::post('video/chunk-upload', [VideoController::class, 'chunkUpload'])->name('video.chunkUpload');
     Route::get('video/edit/{id}',[VideoController::class,'edit'])->name('video.edit');
     Route::get('video/{id}/edit-data', [VideoController::class, 'editData'])->name('video.editData');
     Route::put('video/update/{id}',[VideoController::class,'update'])->name('video.update');
@@ -186,7 +209,7 @@ Route::middleware(['web', 'auth','admin'])->group(function () {
     Route::put('subscription/update/{id}',[SubscriptionController::class,'update'])->name('subscription.update');
     Route::delete('subscription/delete/{id}',[SubscriptionController::class,'destroy'])->name('subscription.destroy');
 
-
+});
 //Route::get('/private-video', function (Request $request) {
 //    if (!Auth::check()) {
 //        return abort(403);

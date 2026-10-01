@@ -49,7 +49,7 @@ class Podcast extends Model
 
     public function podcast_tags(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
-        return $this->hasMany(Podcast::class);
+        return $this->hasMany(PodcastTag::class);
     }
 
 }
